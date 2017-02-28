@@ -36,17 +36,31 @@ var requestHandler = function(request, response) {
   console.log('Serving request type ' + request.method + ' for url ' + request.url);
 
   // The outgoing status.
+
   var results = [];
   var statusCode;
-  if (request.method === 'GET') {
+  if (request.url !== '/classes/messages') {
+    statusCode = 404;
+  } else if (request.method === 'GET') {
     statusCode = 200;
   } else if (request.method === 'POST') {
     statusCode = 201;
-    messages.push(request._postdata);
-    console.log('pushed ' + JSON.stringify(request._postData) + ' messages ' + JSON.stringify(messages));
-  }
+    var body = [];
+    request.on('data', function(chunk) {
+      // console.log('chunk ' + chunk);
+      // var obj = {};
+      // obj.username = chunk.username;
+      // obj.message = chunk.message;
+      body.push(chunk);
+      results.push(JSON.stringify(chunk));
+    }).on('end', function() {
+      body = Buffer.concat(body).toString();
+      console.log(' buffer ' + Buffer);
+    });
+    
+  } 
 
-
+  console.log(results);
   // See the note below about CORS headers.
   var headers = defaultCorsHeaders;
 
@@ -67,7 +81,7 @@ var requestHandler = function(request, response) {
   //
   // Calling .end "flushes" the response's internal buffer, forcing
   // node to actually send all the data over to the client.
-  response.end(JSON.stringify({ message: 'Hello World', results: [] }));
+  response.end(JSON.stringify({ message: 'Hello World', results: results }));
 };
 
 // These headers will allow Cross-Origin Resource Sharing (CORS).

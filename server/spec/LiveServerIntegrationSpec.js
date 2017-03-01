@@ -73,5 +73,32 @@ describe('server', function() {
     });
   });
 
+  it('should respond to POST requests with an empty message with a 204 status code', function(done) {
+    var requestParams = {method: 'POST',
+      uri: 'http://127.0.0.1:3000/classes/messages',
+      json: {
+        username: 'Jono',
+        message: ''}
+    };
 
+    request(requestParams, function(error, response, body) {
+      expect(response.statusCode).to.equal(204);
+      done();
+    });
+  });
+  /*
+  it('headers should contain "Content-Type" as "application/json"', function(done) {
+    var requestParams = {method: 'POST',
+      uri: 'http://127.0.0.1:3000/classes/messages',
+      json: {
+        username: 'Jono',
+        message: 'hi'}
+    };
+    request(requestParams, function(error, response, body) {
+      console.log('response', response);
+      expect(response._headers['Content-Type']).to.equal('application/json');
+      done();
+    });
+  });
+   */
 });

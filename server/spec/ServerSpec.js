@@ -42,6 +42,23 @@ describe('Node Server Request Listener Function', function() {
     expect(parsedBody).to.be.an('object');
     expect(res._ended).to.equal(true);
   });
+  
+  it('Should answer OPTIONS requests for /classes/messages with a 200 status code', function() {
+    var req = new stubs.request('/classes/messages', 'OPTIONS');
+    var res = new stubs.response();
+
+    handler.requestHandler(req, res);
+    expect(res._responseCode).to.equal(200);
+  });
+
+  it('Should return null when OPTIONS requests run', function() {
+    var req = new stubs.request('/classes/messages', 'OPTIONS');
+    var res = new stubs.response();
+
+    handler.requestHandler(req, res);
+    expect(res._data).to.equal('null');
+    expect(res._ended).to.equal(true);
+  });
 
   it('Should send an object containing a `results` array', function() {
     var req = new stubs.request('/classes/messages', 'GET');
@@ -70,7 +87,23 @@ describe('Node Server Request Listener Function', function() {
 
     // Testing for a newline isn't a valid test
     // TODO: Replace with with a valid test
-    // expect(res._data).to.equal(JSON.stringify('\n'));
+    console.log('data:', res._data);
+    // "{\"objectId\":1}"
+    expect(res._data).to.equal(JSON.stringify({'objectId': 1}));
+    expect(res._ended).to.equal(true);
+  });
+
+  it('Should not accept posts to chatter/classes/room', function() {
+    var stubMsg = {
+      username: 'Jono',
+      message: 'Do my bidding!'
+    };
+    var req = new stubs.request('chatter/classes/messages', 'POST', stubMsg);
+    var res = new stubs.response();
+
+    handler.requestHandler(req, res);
+
+    expect(res._responseCode).to.equal(404);
     expect(res._ended).to.equal(true);
   });
 
